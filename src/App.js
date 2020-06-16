@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import worldImg from './world.jpg';
 import CountryGame from './CountryGame';
 import './App.css';
 
