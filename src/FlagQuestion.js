@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import FlagChoices from './FlagChoices';
 import FlagAnswer from './FlagAnswer';
-import './FlagQuestions.css';
+import './FlagQuestion.css';
 
 const QuestionStates = {
 	QUESTION: 1,
@@ -41,7 +41,31 @@ class FlagQuestion extends Component {
 			answerText,
 			onNext
 		} = this.props;
+		const {userChoice} = this.state;
+		let opts = options.map(opt => ({
+			...opt,
+			checked: userChoice === opt.id
+		}));
+		let output = questionState === QuestionStates.QUESTION ? 
+			(<FlagChoices 
+				 handleChange={this.handleChange}
+				 handleSubmit={this.handleSubmit}
+				 options={opts}/>):
+			(<FlagAnswer 
+				 correct={questionState === QuestionStates.ANSWER_CORRECT}
+				 answer={answerText}
+				 onNext={onNext}/>)
 		
+		return(
+			<div>
+				{output}
+				<img 
+					className="flag-img"
+					src={flag}
+					alt="Guess the flag"
+				/>
+			</div>
+		);
 	}
 }
 

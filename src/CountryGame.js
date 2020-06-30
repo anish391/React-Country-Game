@@ -10,25 +10,10 @@ class CountryGame extends Component {
 			options: [],
 			correctOption: undefined,
 			questionState: undefined
-		}
+		};
 		
 		this.onGuess = this.onGuess.bind(this);
 		this.nextQuestion = this.nextQuestion.bind(this);
-	}
-	
-	_getOptions(correctOption, countries) {
-		// Array of country IDs already containing correctOption.
-		let options = [correctOption];
-		let tries = 0;
-		// Get three option IDs from countries array other than the correct option.
-		while(options.length<4 && tries<15){
-			let option = Math.floor(Math.random() * countries.length);
-			if(options.indexOf(option)===-1)
-				options.push(option);
-			else
-				tries++;
-		}
-		return shuffle(options);
 	}
 	
 	componentDidMount() {
@@ -47,6 +32,40 @@ class CountryGame extends Component {
 		.catch(console.warn);
 	}
 	
+	
+	
+	_getOptions(correctOption, countries) {
+		// Array of country IDs already containing correctOption.
+		let options = [correctOption];
+		let tries = 0;
+		// Get three option IDs from countries array other than the correct option.
+		while(options.length<4 && tries<15){
+			let option = Math.floor(Math.random() * countries.length);
+			if(options.indexOf(option)===-1)
+				options.push(option);
+			else
+				tries++;
+		}
+		return shuffle(options);
+	}
+	
+	onGuess(answer) {
+		const {correctOption} = this.state;
+		let questionState = answer === correctOption ? QuestionStates.ANSWER_CORRECT : QuestionStates.ANSWER_WRONG;
+		this.setState({questionState});
+	}
+	
+	nextQuestion() {
+		const {countries} = this.state;
+		const correctOption = Math.floor(Math.random() * countries.length);
+		const options = this._getOptions(correctOption, countries);
+		this.setState({
+		  correctOption,
+		  options,
+		  questionState: QuestionStates.QUESTION
+		}); 
+	}
+	
 	render() {
 		let {
 			countries,
@@ -57,7 +76,7 @@ class CountryGame extends Component {
 		let output = <div>Loading...</div>;
 		if(correctOption!==undefined) {
 			const {flag, name} = countries[correctOption];
-			let questions = options.map(countryID => {
+			let opts = options.map(countryID => {
 				return {
 					id: countryID,
 					name: countries[countryID].name
@@ -67,18 +86,18 @@ class CountryGame extends Component {
 				<FlagQuestion
 					answerText={name}
 					onGuess={this.onGuess}
-					onNext={this.onNext}
-					options={questions}
+					onNext={this.nextQuestion}
+					options={opts}
 					questionState={questionState}
 					flag={flag}
 				/>
 			);
-			return (
-				<div style={{marginTop: '15px'}}>
-					{output}
-				</div>
-			);
 		}
+		return (
+			<div style={{marginTop: '15px'}}>
+				{output}
+			</div>
+		);
 	}
 	
 }
